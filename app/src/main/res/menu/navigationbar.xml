@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/qibla"
+        android:icon="@drawable/mecca"
+        android:title="Qibla" />
+    <item
+
+        android:id="@+id/prayer"
+        android:icon="@drawable/mosque"
+        android:title="Prayers" />
+    <item
+        android:id="@+id/azkaar"
+        android:icon="@drawable/pray"
+        android:title="Azkar" />
+</menu>

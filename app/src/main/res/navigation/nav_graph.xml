@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navgraph"
+    app:startDestination="@id/prayer">
+    <fragment
+        android:id="@+id/prayer"
+        android:name="com.bassem.azahnlite.ui.home.Home"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_prayer_to_azkaar"
+            app:destination="@id/azkaar"
+            app:enterAnim="@android:anim/cycle_interpolator" />
+        <action
+            android:id="@+id/action_prayer_to_qibla"
+            app:destination="@id/qibla"
+            app:enterAnim="@android:anim/cycle_interpolator" />
+    </fragment>
+    <fragment
+        android:id="@+id/azkaar"
+        android:name="com.bassem.azahnlite.ui.azkar.Azkar"
+        android:label="fragment_azkar"
+        tools:layout="@layout/fragment_azkar" >
+        <action
+            android:id="@+id/action_azkaar_to_prayer"
+            app:destination="@id/prayer" />
+        <action
+            android:id="@+id/action_azkaar_to_qibla"
+            app:destination="@id/qibla" />
+    </fragment>
+    <fragment
+        android:id="@+id/qibla"
+        android:name="com.bassem.azahnlite.ui.qibla.Qibla"
+        android:label="fragment_qibla"
+        tools:layout="@layout/fragment_qibla" >
+        <action
+            android:id="@+id/action_qibla_to_prayer"
+            app:destination="@id/prayer" />
+        <action
+            android:id="@+id/action_qibla_to_azkaar"
+            app:destination="@id/azkaar" />
+    </fragment>
+    <activity
+        android:id="@+id/splashScreen"
+        android:name="com.bassem.azahnlite.ui.splash.SplashScreen"
+        android:label="activity_splash_screen"
+        tools:layout="@layout/activity_splash_screen" />
+</navigation>
