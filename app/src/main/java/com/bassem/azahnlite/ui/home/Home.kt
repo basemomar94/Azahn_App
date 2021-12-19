@@ -19,7 +19,7 @@ class Home () : Fragment(R.layout.fragment_home) {
     var country : String?=null
     var prayerList : ArrayList<Item>?=null
     var asr: String?=null
-    val date_for: String?=null
+    var date_for: String?=null
     var dhuhr: String?=null
     var fajr: String?=null
     var isha: String?=null
@@ -64,6 +64,7 @@ class Home () : Fragment(R.layout.fragment_home) {
         }
         binding.dateTV.setOnClickListener {
             binding.dateTV.text=viewModel.getdate()
+          //  binding.dateTV.text=date_for
         }
         binding.fajr.text=fajr
         binding.dhuhr.text=dhuhr
@@ -85,13 +86,13 @@ class Home () : Fragment(R.layout.fragment_home) {
         if (bundle!=null){
             city = bundle.getString("city")
             country=bundle.getString("country")
-           prayerList=bundle.getSerializable("prayers") as ArrayList<Item>
+            prayerList=bundle.getSerializable("prayers") as ArrayList<Item>
             fajr= prayerList!![0].fajr
             dhuhr=prayerList!![0].dhuhr
             asr=prayerList!![0].asr
             maghrib=prayerList!![0].maghrib
             isha=prayerList!![0].isha
-            println("$fajr============last")
+            date_for=prayerList!![0].date_for
 
 
 

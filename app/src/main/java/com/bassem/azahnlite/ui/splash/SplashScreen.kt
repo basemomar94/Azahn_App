@@ -1,44 +1,42 @@
 package com.bassem.azahnlite.ui.splash
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
-import android.os.AsyncTask
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
-import androidx.core.app.ActivityCompat
-import androidx.fragment.app.FragmentManager
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import com.bassem.azahnlite.MainActivity
 import com.bassem.azahnlite.R
+import com.bassem.azahnlite.WeeklyPrayers
 import com.bassem.azahnlite.api.Item
 import com.bassem.azahnlite.api.Myprayers
-import com.bassem.azahnlite.ui.home.Home
+import com.bassem.azahnlite.data_base.PrayersDatabase
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.gson.GsonBuilder
 import com.jaeger.library.StatusBarUtil
+import kotlinx.android.synthetic.main.fragment_home.*
 import okhttp3.*
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SplashScreen : AppCompatActivity() {
-    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    var longitude: Double? = null
-    var altitude: Double? = null
+class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     var cityBundle: String? = null
     var countryBundle: String? = null
     var item: Item? = null
     var prayersList: List<Item>? = null
     var prayerArray: ArrayList<Item>? = null
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,73 +44,60 @@ class SplashScreen : AppCompatActivity() {
         setContentView(R.layout.splash)
         StatusBarUtil.setTransparent(SplashScreen@ this)
         var viewModel = ViewModelProvider(this)[SplashViewmodel::class.java]
-        getCurrentLocation()
+        if (!hasLocationPermission()) {
+            requestLocationPermission()
+        } else {
+
+            getCurrentLocation()
+
+        }
+
 
         //  getPrayers()
 
 
     }
 
+    @SuppressLint("MissingPermission")
     fun getCurrentLocation() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-        fetchLocation()
 
-    }
+        if (hasLocationPermission()) {
 
-    fun fetchLocation() {
-        val task = fusedLocationProviderClient.lastLocation
-        if (ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-            && ActivityCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
+            fusedLocationProviderClient.lastLocation.addOnSuccessListener {
 
-
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
-                101
-            )
-            
-
-
-
-
-        }
-
-
-        task.addOnSuccessListener {
-            getAdress(it.latitude, it.longitude)
+                    location ->
+                run {
+                    getAddress(location.latitude, location.longitude)
+                }
+            }
         }
 
 
     }
 
-    fun getAdress(La: Double, Lo: Double) {
+
+    private fun getAddress(La: Double, Lo: Double) {
         var num = 0
 
         while (num < 3) {
-            var geocoder: Geocoder? = null
-            geocoder = Geocoder(this, Locale.getDefault())
-            var adress: List<Address> = geocoder.getFromLocation(La, Lo, 1)
-            if (adress.isNotEmpty()) {
-                var city = adress[0].locality
+
+            var geocoder = Geocoder(this, Locale.getDefault())
+            val address: List<Address> = geocoder.getFromLocation(La, Lo, 1)
+            if (address.isNotEmpty()) {
+                var city = address[0].locality
                 //    cityBundle = city
-                var state: String = adress[0].adminArea
+                val state: String = address[0].adminArea
                 cityBundle = state
 
-                var country: String = adress[0].countryName
+                val country: String = address[0].countryName
                 countryBundle = country
-                getPrayers()
 
-
-            } else {
 
             }
+            getPrayers()
+          //  getweeklyPrayers()
+
             num++
 
         }
@@ -139,7 +124,7 @@ class SplashScreen : AppCompatActivity() {
         val url = "https://muslimsalat.com/$cityBundle.json?key=$apiKey"
 
 
-        var client: OkHttpClient = OkHttpClient()
+        var client = OkHttpClient()
         val request = Request.Builder().url(url).build()
 
         Thread(Runnable {
@@ -151,34 +136,41 @@ class SplashScreen : AppCompatActivity() {
                     runOnUiThread {
                         val builder = AlertDialog.Builder(this@SplashScreen)
                         builder.setMessage("Please check your internet connection")
-                        builder.setPositiveButton("try again",DialogInterface.OnClickListener { dialogInterface, i -> restartApp(this@SplashScreen)  })
-                        builder.setNegativeButton("exsit",DialogInterface.OnClickListener({dialogInterface, i -> exsit() }))
+                        builder.setPositiveButton(
+                            "try again",
+                            DialogInterface.OnClickListener { _, _ -> restartApp(this@SplashScreen) })
+                        builder.setNegativeButton(
+                            "exsit",
+                            DialogInterface.OnClickListener { _, _ -> exsit() }
+                        )
                         builder.show()
                     }
-
-
 
 
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     if (!response.isSuccessful) {
-                        throw IOException("the problem is =====================$response")
+
                     } else {
-                        println("===============${response.body.toString()}")
+
                         val body = response.body?.string()
 
                         val gson = GsonBuilder().create()
                         val prayers = gson.fromJson(body, Myprayers::class.java)
 
 
-                        prayersList=prayers.items
+                        prayersList = prayers.items
 
                         prayerArray = ArrayList(prayersList)
                         println(prayerArray)
+                        val db = PrayersDatabase.getinstance(this@SplashScreen)
+                        PrayersDatabase.db_write.execute {
+                            db.dao().insert(prayerArray!!)
+                        }
 
 
-                       sendToActivity()
+                        sendToActivity()
 
 
                     }
@@ -196,14 +188,93 @@ class SplashScreen : AppCompatActivity() {
 
     }
 
-    fun restartApp (context: Activity){
-        val intent = Intent(context,SplashScreen::class.java)
+    fun restartApp(context: Activity) {
+        val intent = Intent(context, SplashScreen::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
         if (context is Activity) {
-            (context as Activity).finish()
+            context.finish()
         }
         Runtime.getRuntime().exit(0)
+    }
+
+    fun hasLocationPermission() =
+        EasyPermissions.hasPermissions(this, Manifest.permission.ACCESS_FINE_LOCATION)
+
+    fun requestLocationPermission() {
+        EasyPermissions.requestPermissions(
+            this,
+            "This application can't work without location permission",
+            101,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    }
+
+    override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
+        Toast.makeText(this, "Permission is granted", Toast.LENGTH_LONG).show()
+
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: MutableList<String>) {
+
+        if (EasyPermissions.somePermissionDenied(this, perms.first())) {
+            AppSettingsDialog.Builder(Activity()).build().show()
+        } else {
+            requestLocationPermission()
+        }
+
+
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
+    }
+
+    fun getweeklyPrayers() {
+
+        println("weekly")
+        val api = "d3e8fcd1ee38e5ab5e16fabfc98fdfae"
+        val url = "https://muslimsalat.com/$cityBundle/weekly.json?key=$api"
+        val client = OkHttpClient()
+        val request = Request.Builder().url(url).build()
+        Thread(Runnable {
+
+            println("weekl2222222y")
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onFailure(call: Call, e: IOException) {
+
+                    println("$e ============Error")
+                }
+
+                override fun onResponse(call: Call, response: Response) {
+
+                    if (!response.isSuccessful) {
+                        throw IOException()
+                    } else {
+
+                        val body = response.body.toString()
+                        val gson = GsonBuilder().create()
+
+
+                        var weeklyprayer = gson.fromJson(body, WeeklyPrayers::class.java)
+                        var wk=gson.fromJson<WeeklyPrayers>(body,WeeklyPrayers::class.java)
+                        val list: List<com.bassem.azahnlite.ItemWeekly> = weeklyprayer.items
+                        println("==============weekly${list}")
+
+                    }
+                }
+
+
+            })
+        }).run()
+
+
     }
 
 

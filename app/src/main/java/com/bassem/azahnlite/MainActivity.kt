@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
 
     fun sendToFragment() {
         val prayerBundle = intent.getSerializableExtra("prayers") as ArrayList<Item>?
-        println("${prayerBundle!![0].asr}===============================")
+
         cityBundle = intent.getStringExtra("city")
         countryBundle = intent.getStringExtra("country")
 
