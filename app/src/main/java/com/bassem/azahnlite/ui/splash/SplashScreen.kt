@@ -40,6 +40,9 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     var countryBundle: String? = null
     var item: Item? = null
     var prayersList: List<Item>? = null
+    var latitue : Double?=null
+    var longtiude : Double?=null
+
     var weeklyList: List<ItemWeekly>? = null
     var isConnect : Boolean?=null
 
@@ -55,12 +58,6 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         Checking()
 
 
-
-
-
-        //  getPrayers()
-
-
     }
 
     @SuppressLint("MissingPermission")
@@ -74,11 +71,13 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     location ->
                 run {
                     getAddress(location.latitude, location.longitude)
+                    latitue=location.latitude
+                    longtiude=location.longitude
+                    Save_coordinates(latitue.toString(),longtiude.toString())
+
                 }
             }
         }
-
-
     }
 
 
@@ -99,12 +98,8 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                 countryBundle = country
                 Save_City(cityBundle!!,countryBundle!!)
 
-
-
             }
             getPrayers()
-          //  getweeklyPrayers()
-
             num++
 
         }
@@ -115,9 +110,6 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     fun sendToActivity() {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("city", cityBundle)
-        intent.putExtra("country", countryBundle)
-        intent.putExtra("prayers", prayerArray)
         startActivity(intent)
         finish()
     }
@@ -170,11 +162,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                             db.dao().deleteAll()
                             db.dao().insert(prayerArray!!)
                         }
-
-
-                        sendToActivity()
-
-
+                       sendToActivity()
                     }
 
                 }
@@ -249,21 +237,16 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         isOnline()
 
         isConnect=isOnline()
-        println("=============Splash=============${isConnect}")
-
         if (isConnect as Boolean){
 
             if (!hasLocationPermission()) {
                 requestLocationPermission()
             } else {
-
                 getCurrentLocation()
-
-
             }
         } else {
             var intent = Intent(this,MainActivity::class.java)
-            intent.putExtra("isConnect",isConnect)
+           // intent.putExtra("isConnect",isConnect)
             startActivity(intent)
 
         }
@@ -275,7 +258,17 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         var editor = sharedPref.edit()
         editor.putString("city",city)
         editor.putString("country",country)
-        editor.commit()
+        editor.apply()
+    }
+
+    fun Save_coordinates (La :String,Lo:String){
+        val sharedPref:SharedPreferences=this.getSharedPreferences("Pref",Context.MODE_PRIVATE)
+        var editor=sharedPref.edit()
+        editor.putString("La",La)
+        editor.putString("Lo",Lo)
+        editor.apply()
+
+
     }
 
 

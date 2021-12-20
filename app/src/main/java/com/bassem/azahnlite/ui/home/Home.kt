@@ -16,6 +16,22 @@ import com.bassem.azahnlite.api.Item
 import com.bassem.azahnlite.data_base.PrayersDatabase
 import com.bassem.azahnlite.databinding.FragmentHomeBinding
 import com.jaeger.library.StatusBarUtil
+import java.lang.System.currentTimeMillis
+import java.sql.Time
+import java.text.SimpleDateFormat
+import java.time.Duration
+import java.time.Instant
+import java.time.Instant.now
+import java.time.LocalDate
+import java.time.LocalDateTime.now
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
+import kotlin.collections.ArrayList
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+
 
 class Home() : Fragment(R.layout.fragment_home) {
     var city: String? = null
@@ -35,17 +51,18 @@ class Home() : Fragment(R.layout.fragment_home) {
     lateinit var mlist: ArrayList<Item>
 
 
-
     var _binding: FragmentHomeBinding? = null
     val binding get() = _binding!!
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(@Nullable savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         var viewModel = ViewModelProvider(this).get(HomeViewmodel::class.java)
         //  StatusBarUtil.setTransparent(activity)
 
-       getDatabase()
-     //   getCity()
+        getDatabase()
+        //   getCity()
 
     }
 
@@ -55,10 +72,13 @@ class Home() : Fragment(R.layout.fragment_home) {
         savedInstanceState: Bundle?
     ): View? {
 
+
+
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
 
     }
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,14 +89,13 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.forward.setOnClickListener {
             println(day)
 
-        try {
-            day++
-            getCity()
-            setTimes()
-        } catch (E:Exception){
-            day=mlist.size
-        }
-
+            try {
+                day++
+                getCity()
+                setTimes()
+            } catch (E: Exception) {
+                day = mlist.size
+            }
 
 
         }
@@ -85,8 +104,8 @@ class Home() : Fragment(R.layout.fragment_home) {
                 day--
                 getCity()
                 setTimes()
-            } catch (E:Exception){
-                day =0
+            } catch (E: Exception) {
+                day = 0
             }
 
         }
@@ -98,42 +117,23 @@ class Home() : Fragment(R.layout.fragment_home) {
         setTimes()
 
 
-
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getCity() {
-        val bundle = arguments
-        if (bundle != null) {
-            var isConnect = bundle.getBoolean("isConnect")
-            println("=========================Home==============================$isConnect")
-            if (isConnect)  {
-                city = bundle.getString("city")
-                country = bundle.getString("country")
-            }
-            else {
-                val preference= context!!.getSharedPreferences("Pref",Context.MODE_PRIVATE)
-
-                city= preference.getString("city","....")
-                country=preference.getString("country","...")
-
-            }
-
-           // prayerList = bundle.getSerializable("prayers") as ArrayList<Item>
-            currentList=mlist
-            fajr = currentList!![day].fajr
-            dhuhr = currentList!![day].dhuhr
-            asr = currentList!![day].asr
-            maghrib = currentList!![day].maghrib
-            isha = currentList!![day].isha
-            date_for = currentList!![day].date_for
-
-
-
-
-        }
-
+        val preference = context!!.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+        city = preference.getString("city", "....")
+        country = preference.getString("country", "...")
+        currentList = mlist
+        fajr = currentList!![day].fajr
+        dhuhr = currentList!![day].dhuhr
+        asr = currentList!![day].asr
+        maghrib = currentList!![day].maghrib
+        isha = currentList!![day].isha
+        date_for = currentList!![day].date_for
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getDatabase() {
         val db = PrayersDatabase.getinstance(context)
         PrayersDatabase.db_write.execute {
@@ -143,14 +143,16 @@ class Home() : Fragment(R.layout.fragment_home) {
 
         }
     }
-    fun setTimes (){
+
+    fun setTimes() {
         binding.fajr.text = fajr
         binding.dhuhr.text = dhuhr
         binding.asr.text = asr
         binding.maghrib.text = maghrib
         binding.isha.text = isha
-        binding.dateTV.text=date_for
+        binding.dateTV.text = date_for
     }
+
 
 
 
