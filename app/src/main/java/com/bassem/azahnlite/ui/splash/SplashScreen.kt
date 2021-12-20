@@ -4,10 +4,13 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.location.Address
 import android.location.Geocoder
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -52,6 +55,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         } else {
 
             getCurrentLocation()
+            println("=======================================================================================${isOnline()}")
 
         }
 
@@ -120,12 +124,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     fun getPrayers() {
         val apiKey = "d3e8fcd1ee38e5ab5e16fabfc98fdfae"
-
-       // val url = "https://muslimsalat.com/$cityBundle.json?key=$apiKey"
         val url = "https://muslimsalat.com/london/weekly.json?key=$apiKey"
-
-
-
         var client = OkHttpClient()
         val request = Request.Builder().url(url).build()
 
@@ -240,46 +239,15 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
-    fun getweeklyPrayers() {
+   fun isOnline ():Boolean{
 
-        println("weekly")
-        val api = "d3e8fcd1ee38e5ab5e16fabfc98fdfae"
-          val url = "https://muslimsalat.com/$cityBundle/weekly.json?key=$api"
-       // val url = "https://muslimsalat.com/london/weekly.json?key=$api"
-        val client = OkHttpClient()
-        val request = Request.Builder().url(url).build()
-        Thread(Runnable {
-
-            println("weekl2222222y")
-
-            client.newCall(request).enqueue(object : Callback {
-                override fun onFailure(call: Call, e: IOException) {
-
-                    println("$e ============Error")
-                }
-
-                override fun onResponse(call: Call, response: Response) {
-
-                    if (!response.isSuccessful) {
-                        throw IOException()
-                    } else {
-
-                        val body = response.body?.toString()
-                        val gson = GsonBuilder().create()
-                        val prayers = gson.fromJson(body, WeeklyPrayers::class.java)
-                        weeklyList = prayers.items
-                        println("==============weekly${weeklyList}")
+       val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+       var activenetworkInfo : NetworkInfo?=null
+       activenetworkInfo=cm.activeNetworkInfo
+       return activenetworkInfo!=null && activenetworkInfo.isConnectedOrConnecting
+   }
 
 
-                    }
-                }
-
-
-            })
-        }).start()
-
-
-    }
 
 
 }
