@@ -12,6 +12,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
+import com.bassem.azahnlite.ItemWeekly
 import com.bassem.azahnlite.MainActivity
 import com.bassem.azahnlite.R
 import com.bassem.azahnlite.WeeklyPrayers
@@ -35,6 +36,8 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     var countryBundle: String? = null
     var item: Item? = null
     var prayersList: List<Item>? = null
+    var weeklyList: List<ItemWeekly>? = null
+
     var prayerArray: ArrayList<Item>? = null
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
@@ -110,10 +113,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("city", cityBundle)
         intent.putExtra("country", countryBundle)
-
         intent.putExtra("prayers", prayerArray)
-
-
         startActivity(intent)
         finish()
     }
@@ -121,7 +121,9 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     fun getPrayers() {
         val apiKey = "d3e8fcd1ee38e5ab5e16fabfc98fdfae"
 
-        val url = "https://muslimsalat.com/$cityBundle.json?key=$apiKey"
+       // val url = "https://muslimsalat.com/$cityBundle.json?key=$apiKey"
+        val url = "https://muslimsalat.com/london/weekly.json?key=$apiKey"
+
 
 
         var client = OkHttpClient()
@@ -161,11 +163,14 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
                         prayersList = prayers.items
+                        println("test======================================== $prayersList")
 
                         prayerArray = ArrayList(prayersList)
                         println(prayerArray)
                         val db = PrayersDatabase.getinstance(this@SplashScreen)
                         PrayersDatabase.db_write.execute {
+
+                            db.dao().deleteAll()
                             db.dao().insert(prayerArray!!)
                         }
 
@@ -239,7 +244,8 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         println("weekly")
         val api = "d3e8fcd1ee38e5ab5e16fabfc98fdfae"
-        val url = "https://muslimsalat.com/$cityBundle/weekly.json?key=$api"
+          val url = "https://muslimsalat.com/$cityBundle/weekly.json?key=$api"
+       // val url = "https://muslimsalat.com/london/weekly.json?key=$api"
         val client = OkHttpClient()
         val request = Request.Builder().url(url).build()
         Thread(Runnable {
@@ -258,21 +264,19 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                         throw IOException()
                     } else {
 
-                        val body = response.body.toString()
+                        val body = response.body?.toString()
                         val gson = GsonBuilder().create()
+                        val prayers = gson.fromJson(body, WeeklyPrayers::class.java)
+                        weeklyList = prayers.items
+                        println("==============weekly${weeklyList}")
 
-
-                        var weeklyprayer = gson.fromJson(body, WeeklyPrayers::class.java)
-                        var wk=gson.fromJson<WeeklyPrayers>(body,WeeklyPrayers::class.java)
-                        val list: List<com.bassem.azahnlite.ItemWeekly> = weeklyprayer.items
-                        println("==============weekly${list}")
 
                     }
                 }
 
 
             })
-        }).run()
+        }).start()
 
 
     }

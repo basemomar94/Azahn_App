@@ -1,9 +1,7 @@
 package com.bassem.azahnlite.data_base
 
+import androidx.room.*
 import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
 import com.bassem.azahnlite.api.Item
 
 @Dao
@@ -11,7 +9,11 @@ interface Dao {
     @Insert(onConflict =OnConflictStrategy.REPLACE)
     fun insert(list: List<Item>)
 
-    /*
+
+    @Query("Delete from prayers_table")
+    fun deleteAll()
+
+
     @Query("Select * from prayers_table")
-    fun getall(): ArrayList<Item>*/
+    fun getall(): List<Item>
 }

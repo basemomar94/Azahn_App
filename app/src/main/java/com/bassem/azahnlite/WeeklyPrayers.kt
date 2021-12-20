@@ -4,8 +4,9 @@ data class WeeklyPrayers(
     val address: String,
     val city: String,
     val country: String,
-    val `for`: String,
     val items: List<ItemWeekly>,
+/*
+    val `for`: String,
     val latitude: String,
     val link: String,
     val longitude: String,
@@ -16,6 +17,6 @@ data class WeeklyPrayers(
     val qibla_direction: String,
     val query: String,
     val sealevel: String,
-    val state: String,
+    val state: String,*/
 
 )
