@@ -16,8 +16,6 @@ import com.jaeger.library.StatusBarUtil
 import java.util.ArrayList
 
 
-
-
 class MainActivity : AppCompatActivity() {
     var cityBundle: String? = null
     var countryBundle: String? = null
@@ -37,18 +35,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun sendToFragment() {
-        val prayerBundle = intent.getSerializableExtra("prayers") as ArrayList<Item>?
-
-        cityBundle = intent.getStringExtra("city")
-        countryBundle = intent.getStringExtra("country")
-
         val mFragmentmange = supportFragmentManager
         val mFragmenttranscution = mFragmentmange.beginTransaction()
         val mFragment = Home()
         val mBundle = Bundle()
-        mBundle.putString("city", cityBundle)
-        mBundle.putString("country", countryBundle)
-        mBundle.putSerializable("prayers",prayerBundle)
+        var isconnect = intent.getBooleanExtra("isConnect", true)
+        println("=======================Main===========$isconnect")
+        if (isconnect) {
+            val prayerBundle = intent.getSerializableExtra("prayers") as ArrayList<Item>?
+            cityBundle = intent.getStringExtra("city")
+            countryBundle = intent.getStringExtra("country")
+            mBundle.putString("city", cityBundle)
+            mBundle.putString("country", countryBundle)
+            mBundle.putSerializable("prayers", prayerBundle)
+            mBundle.putBoolean("isConnect",isconnect)
+
+        } else {
+
+            mBundle.putBoolean("isConnect",isconnect)
+
+        }
+
         mFragment.arguments = mBundle
         mFragmenttranscution.add(R.id.nav_host_fragment, mFragment).commit()
 

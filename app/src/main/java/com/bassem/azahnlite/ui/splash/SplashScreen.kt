@@ -7,6 +7,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.SharedPreferences
 import android.location.Address
 import android.location.Geocoder
 import android.net.ConnectivityManager
@@ -40,6 +41,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     var item: Item? = null
     var prayersList: List<Item>? = null
     var weeklyList: List<ItemWeekly>? = null
+    var isConnect : Boolean?=null
 
     var prayerArray: ArrayList<Item>? = null
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -50,14 +52,10 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         setContentView(R.layout.splash)
         StatusBarUtil.setTransparent(SplashScreen@ this)
         var viewModel = ViewModelProvider(this)[SplashViewmodel::class.java]
-        if (!hasLocationPermission()) {
-            requestLocationPermission()
-        } else {
+        Checking()
 
-            getCurrentLocation()
-            println("=======================================================================================${isOnline()}")
 
-        }
+
 
 
         //  getPrayers()
@@ -99,6 +97,8 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
                 val country: String = address[0].countryName
                 countryBundle = country
+                Save_City(cityBundle!!,countryBundle!!)
+
 
 
             }
@@ -162,8 +162,6 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
 
                         prayersList = prayers.items
-                        println("test======================================== $prayersList")
-
                         prayerArray = ArrayList(prayersList)
                         println(prayerArray)
                         val db = PrayersDatabase.getinstance(this@SplashScreen)
@@ -246,6 +244,39 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
        activenetworkInfo=cm.activeNetworkInfo
        return activenetworkInfo!=null && activenetworkInfo.isConnectedOrConnecting
    }
+
+    fun Checking (){
+        isOnline()
+
+        isConnect=isOnline()
+        println("=============Splash=============${isConnect}")
+
+        if (isConnect as Boolean){
+
+            if (!hasLocationPermission()) {
+                requestLocationPermission()
+            } else {
+
+                getCurrentLocation()
+
+
+            }
+        } else {
+            var intent = Intent(this,MainActivity::class.java)
+            intent.putExtra("isConnect",isConnect)
+            startActivity(intent)
+
+        }
+
+    }
+
+    fun Save_City (city:String,country:String){
+        val sharedPref: SharedPreferences = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+        var editor = sharedPref.edit()
+        editor.putString("city",city)
+        editor.putString("country",country)
+        editor.commit()
+    }
 
 
 

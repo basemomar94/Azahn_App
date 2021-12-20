@@ -1,6 +1,7 @@
 package com.bassem.azahnlite.ui.home
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -34,6 +35,7 @@ class Home() : Fragment(R.layout.fragment_home) {
     lateinit var mlist: ArrayList<Item>
 
 
+
     var _binding: FragmentHomeBinding? = null
     val binding get() = _binding!!
 
@@ -42,8 +44,8 @@ class Home() : Fragment(R.layout.fragment_home) {
         var viewModel = ViewModelProvider(this).get(HomeViewmodel::class.java)
         //  StatusBarUtil.setTransparent(activity)
 
-        getDatabase()
-        getCity()
+       getDatabase()
+     //   getCity()
 
     }
 
@@ -102,10 +104,22 @@ class Home() : Fragment(R.layout.fragment_home) {
     fun getCity() {
         val bundle = arguments
         if (bundle != null) {
-            city = bundle.getString("city")
-            country = bundle.getString("country")
-            prayerList = bundle.getSerializable("prayers") as ArrayList<Item>
-            currentList=prayerList
+            var isConnect = bundle.getBoolean("isConnect")
+            println("=========================Home==============================$isConnect")
+            if (isConnect)  {
+                city = bundle.getString("city")
+                country = bundle.getString("country")
+            }
+            else {
+                val preference= context!!.getSharedPreferences("Pref",Context.MODE_PRIVATE)
+
+                city= preference.getString("city","....")
+                country=preference.getString("country","...")
+
+            }
+
+           // prayerList = bundle.getSerializable("prayers") as ArrayList<Item>
+            currentList=mlist
             fajr = currentList!![day].fajr
             dhuhr = currentList!![day].dhuhr
             asr = currentList!![day].asr
@@ -125,6 +139,7 @@ class Home() : Fragment(R.layout.fragment_home) {
         PrayersDatabase.db_write.execute {
             mlist = db.dao().getall() as ArrayList<Item>
             println(mlist.size)
+            getCity()
 
         }
     }
@@ -136,5 +151,7 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.isha.text = isha
         binding.dateTV.text=date_for
     }
+
+
 
 }
