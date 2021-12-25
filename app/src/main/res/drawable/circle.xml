@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="ring"
+    android:useLevel="false"
+    android:innerRadiusRatio="1.5"
+    android:innerRadius="0dp"
+    android:thicknessRatio="2.5"
+
+    >
+    <solid
+
+        android:color="@android:color/transparent"
+
+        >
+
+
+    </solid>
+<stroke
+    android:width="5dp"
+    android:color="#03DAC5"
+    >
+
+</stroke>
+
+</shape>

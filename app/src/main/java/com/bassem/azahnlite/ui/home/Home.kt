@@ -1,5 +1,6 @@
 package com.bassem.azahnlite.ui.home
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Build
@@ -19,12 +20,9 @@ import com.jaeger.library.StatusBarUtil
 import java.lang.System.currentTimeMillis
 import java.sql.Time
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
+import java.time.*
 import java.time.Instant.now
-import java.time.LocalDate
 import java.time.LocalDateTime.now
-import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
@@ -131,6 +129,7 @@ class Home() : Fragment(R.layout.fragment_home) {
         maghrib = currentList!![day].maghrib
         isha = currentList!![day].isha
         date_for = currentList!![day].date_for
+        //Countdown(fajr!!)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -151,6 +150,31 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.maghrib.text = maghrib
         binding.isha.text = isha
         binding.dateTV.text = date_for
+    }
+    @SuppressLint("NewApi")
+    fun Countdown(time:String){
+        val sdf = DateTimeFormatter.ofPattern("hh:mm a")
+        println("${time.length}===c")
+
+        if (time.length>=7){
+           time.startsWith("0")
+            var forfor= LocalTime.parse(time.uppercase(),sdf)
+            println("${time.length}===AFTER")
+
+            println(forfor)
+
+        }
+        else{
+            var forfor= LocalTime.parse(time.uppercase(),sdf)
+            println(forfor)
+
+
+        }
+
+
+
+
+
     }
 
 

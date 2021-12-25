@@ -21,7 +21,7 @@
         tools:layout="@layout/activity_splash_screen" />
     <fragment
         android:id="@+id/azkaar"
-        android:name="com.bassem.azahnlite.MapsFragment"
-        android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" />
+        android:name="com.bassem.azahnlite.ui.azkar.Azkar"
+        android:label="azkar"
+        tools:layout="@layout/azkar" />
 </navigation>

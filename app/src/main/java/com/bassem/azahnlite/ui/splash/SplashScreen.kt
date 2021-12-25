@@ -16,10 +16,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.bassem.azahnlite.ItemWeekly
 import com.bassem.azahnlite.MainActivity
 import com.bassem.azahnlite.R
-import com.bassem.azahnlite.WeeklyPrayers
 import com.bassem.azahnlite.api.Item
 import com.bassem.azahnlite.api.Myprayers
 import com.bassem.azahnlite.data_base.PrayersDatabase
@@ -36,17 +34,14 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
-    var cityBundle: String? = null
-    var countryBundle: String? = null
-    var item: Item? = null
-    var prayersList: List<Item>? = null
-    var latitue : Double?=null
-    var longtiude : Double?=null
-
-    var weeklyList: List<ItemWeekly>? = null
-    var isConnect : Boolean?=null
-
-    var prayerArray: ArrayList<Item>? = null
+    private var cityBundle: String? = null
+    private var countryBundle: String? = null
+    private var item: Item? = null
+    private var prayersList: List<Item>? = null
+    private var latitue: Double? = null
+    private var longtiude: Double? = null
+    private var isConnect: Boolean? = null
+    private var prayerArray: ArrayList<Item>? = null
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
@@ -71,9 +66,9 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     location ->
                 run {
                     getAddress(location.latitude, location.longitude)
-                    latitue=location.latitude
-                    longtiude=location.longitude
-                    Save_coordinates(latitue.toString(),longtiude.toString())
+                    latitue = location.latitude
+                    longtiude = location.longitude
+                    Save_coordinates(latitue.toString(), longtiude.toString())
 
                 }
             }
@@ -86,21 +81,29 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         while (num < 3) {
 
-            var geocoder = Geocoder(this, Locale.getDefault())
-            val address: List<Address> = geocoder.getFromLocation(La, Lo, 1)
-            if (address.isNotEmpty()) {
-                var city = address[0].locality
-                //    cityBundle = city
-                val state: String = address[0].adminArea
-                cityBundle = state
+            try {
+                var geocoder = Geocoder(this, Locale.getDefault())
+                val address: List<Address> = geocoder.getFromLocation(La, Lo, 1)
+                if (address.isNotEmpty()) {
+                    var city = address[0].locality
+                    //    cityBundle = city
+                    //   val state: String = address[0].adminArea
+                    cityBundle = city
 
-                val country: String = address[0].countryName
-                countryBundle = country
-                Save_City(cityBundle!!,countryBundle!!)
+                    val country: String = address[0].countryName
+                    countryBundle = country
+                    Save_City(cityBundle!!, countryBundle!!)
 
+                }
+            } catch (e: Exception) {
+                val sharedPreferences = getSharedPreferences("Pref", Context.MODE_PRIVATE)
+               cityBundle= sharedPreferences.getString("city", "Cairo")
             }
-            getPrayers()
+
+
             num++
+
+            getPrayers()
 
         }
 
@@ -116,7 +119,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     fun getPrayers() {
         val apiKey = "d3e8fcd1ee38e5ab5e16fabfc98fdfae"
-        val url = "https://muslimsalat.com/london/weekly.json?key=$apiKey"
+        val url = "https://muslimsalat.com/$cityBundle/weekly/Egyptian General Authority of Survey.json?key=$apiKey"
         var client = OkHttpClient()
         val request = Request.Builder().url(url).build()
 
@@ -151,18 +154,23 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
                         val gson = GsonBuilder().create()
                         val prayers = gson.fromJson(body, Myprayers::class.java)
+                        Save_angle(prayers.qibla_direction)
 
 
                         prayersList = prayers.items
                         prayerArray = ArrayList(prayersList)
-                        println(prayerArray)
+                        println("${prayers.qibla_direction} ==================Qibla")
                         val db = PrayersDatabase.getinstance(this@SplashScreen)
                         PrayersDatabase.db_write.execute {
 
                             db.dao().deleteAll()
-                            db.dao().insert(prayerArray!!)
+
+                            if (db.dao().getall().isEmpty()) {
+                                db.dao().insert(prayerArray!!)
+
+                            }
                         }
-                       sendToActivity()
+                        sendToActivity()
                     }
 
                 }
@@ -225,53 +233,58 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
-   fun isOnline ():Boolean{
+    fun isOnline(): Boolean {
 
-       val cm = applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-       var activenetworkInfo : NetworkInfo?=null
-       activenetworkInfo=cm.activeNetworkInfo
-       return activenetworkInfo!=null && activenetworkInfo.isConnectedOrConnecting
-   }
+        val cm =
+            applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        var activenetworkInfo: NetworkInfo? = null
+        activenetworkInfo = cm.activeNetworkInfo
+        return activenetworkInfo != null && activenetworkInfo.isConnectedOrConnecting
+    }
 
-    fun Checking (){
-        isOnline()
-
-        isConnect=isOnline()
-        if (isConnect as Boolean){
+    fun Checking() {
+        if (isOnline()) {
 
             if (!hasLocationPermission()) {
                 requestLocationPermission()
             } else {
-                getCurrentLocation()
+                try {
+                    getCurrentLocation()
+
+                } catch (E: Exception) {
+                    val intent = Intent(this, MainActivity::class.java)
+                    startActivity(intent)
+                }
             }
         } else {
-            var intent = Intent(this,MainActivity::class.java)
-           // intent.putExtra("isConnect",isConnect)
+            val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
 
         }
 
     }
 
-    fun Save_City (city:String,country:String){
+    fun Save_City(city: String, country: String) {
         val sharedPref: SharedPreferences = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
         var editor = sharedPref.edit()
-        editor.putString("city",city)
-        editor.putString("country",country)
+        editor.putString("city", city)
+        editor.putString("country", country)
         editor.apply()
     }
 
-    fun Save_coordinates (La :String,Lo:String){
-        val sharedPref:SharedPreferences=this.getSharedPreferences("Pref",Context.MODE_PRIVATE)
-        var editor=sharedPref.edit()
-        editor.putString("La",La)
-        editor.putString("Lo",Lo)
+    fun Save_coordinates(La: String, Lo: String) {
+        val sharedPref: SharedPreferences = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+        var editor = sharedPref.edit()
+        editor.putString("La", La)
+        editor.putString("Lo", Lo)
         editor.apply()
-
-
     }
-
-
+    fun Save_angle(angle:String) {
+        val sharedPref: SharedPreferences = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+        var editor = sharedPref.edit()
+        editor.putString("angle",angle)
+        editor.apply()
+    }
 
 
 }

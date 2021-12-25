@@ -15,7 +15,7 @@ data class Myprayers(
   //  val method: Int,
   //  val postal_code: String,
   //  val prayer_method_name: String,
-  //  val qibla_direction: String,
+    val qibla_direction: String,
   //  val query: String,
   //  val sealevel: String,
   //  val state: String,
