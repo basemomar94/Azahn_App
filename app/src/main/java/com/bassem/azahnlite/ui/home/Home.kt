@@ -129,7 +129,7 @@ class Home() : Fragment(R.layout.fragment_home) {
         maghrib = currentList!![day].maghrib
         isha = currentList!![day].isha
         date_for = currentList!![day].date_for
-        //Countdown(fajr!!)
+        println(Countdown(asr!!))
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -152,31 +152,26 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.dateTV.text = date_for
     }
     @SuppressLint("NewApi")
-    fun Countdown(time:String){
+    fun Countdown(prayer:String) : Duration{
         val sdf = DateTimeFormatter.ofPattern("hh:mm a")
-        println("${time.length}===c")
+        var value:LocalTime
+        var timeNow=LocalTime.now()
+        println("${prayer.length}===c")
 
-        if (time.length>=7){
-           time.startsWith("0")
-            var forfor= LocalTime.parse(time.uppercase(),sdf)
-            println("${time.length}===AFTER")
+        if (prayer.length <=7){
 
-            println(forfor)
+            var prayerPlus= "0$prayer"
+             value= LocalTime.parse(prayerPlus.uppercase(),sdf)
+
 
         }
         else{
-            var forfor= LocalTime.parse(time.uppercase(),sdf)
-            println(forfor)
-
+           value= LocalTime.parse(prayer.uppercase(),sdf)
 
         }
-
-
-
-
+        return Duration.between(value,timeNow)
 
     }
-
 
 
 

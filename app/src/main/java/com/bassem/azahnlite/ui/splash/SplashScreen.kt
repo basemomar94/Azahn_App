@@ -10,11 +10,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.location.Address
 import android.location.Geocoder
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
 import com.bassem.azahnlite.MainActivity
 import com.bassem.azahnlite.R
@@ -45,6 +48,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.splash)
@@ -242,8 +246,9 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         return activenetworkInfo != null && activenetworkInfo.isConnectedOrConnecting
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     fun Checking() {
-        if (isOnline()) {
+        if (isOnline() && isGps()) {
 
             if (!hasLocationPermission()) {
                 requestLocationPermission()
@@ -284,6 +289,13 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         var editor = sharedPref.edit()
         editor.putString("angle",angle)
         editor.apply()
+    }
+
+    @RequiresApi(Build.VERSION_CODES.P)
+    fun isGps(): Boolean {
+        var lm =
+            applicationContext.getSystemService(android.content.Context.LOCATION_SERVICE) as LocationManager
+        return lm.isLocationEnabled
     }
 
 
