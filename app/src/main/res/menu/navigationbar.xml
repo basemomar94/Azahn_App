@@ -12,6 +12,6 @@
         android:title="Prayers" />
     <item
         android:id="@+id/azkaar"
-        android:icon="@drawable/pray"
-        android:title="Azkar" />
+        android:icon="@drawable/settings"
+        android:title="Settings" />
 </menu>

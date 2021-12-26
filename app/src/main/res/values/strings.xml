@@ -1,9 +1,15 @@
 <resources>
-    <string name="app_name">Azahn lite</string>
+    <string name="app_name" translatable="false">Azahn lite</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main2">MainActivity2</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="title_activity_main2" translatable="false">MainActivity2</string>
+    <string name="title_home" translatable="false">Home</string>
+    <string name="title_dashboard" translatable="false">Dashboard</string>
+    <string name="title_notifications" translatable="false">Notifications</string>
+    <string name="prayers_time_in">Prayers time in .....</string>
+    <string name="fajr">fajr</string>
+    <string name="dhuhr">dhuhr</string>
+    <string name="asr">asr</string>
+    <string name="maghrib">maghrib</string>
+    <string name="isha">isha</string>
 </resources>

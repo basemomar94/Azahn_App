@@ -2,7 +2,7 @@ package com.bassem.azahnlite.ui.home
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,19 +16,13 @@ import com.bassem.azahnlite.R
 import com.bassem.azahnlite.api.Item
 import com.bassem.azahnlite.data_base.PrayersDatabase
 import com.bassem.azahnlite.databinding.FragmentHomeBinding
-import com.jaeger.library.StatusBarUtil
-import java.lang.System.currentTimeMillis
-import java.sql.Time
-import java.text.SimpleDateFormat
+import kotlinx.android.synthetic.main.fragment_home.*
 import java.time.*
-import java.time.Instant.now
-import java.time.LocalDateTime.now
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 import java.util.*
 import kotlin.collections.ArrayList
-import java.util.Locale
-import java.util.concurrent.TimeUnit
+import javax.xml.datatype.DatatypeConstants
+import javax.xml.datatype.DatatypeConstants.MINUTES
 
 
 class Home() : Fragment(R.layout.fragment_home) {
@@ -71,10 +65,16 @@ class Home() : Fragment(R.layout.fragment_home) {
     ): View? {
 
 
-
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setTimes()
+
+        getnext()
     }
 
 
@@ -85,7 +85,6 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.location.text = "$city, $country"
 
         binding.forward.setOnClickListener {
-            println(day)
 
             try {
                 day++
@@ -112,7 +111,6 @@ class Home() : Fragment(R.layout.fragment_home) {
         }
 
 
-        setTimes()
 
 
     }
@@ -129,7 +127,8 @@ class Home() : Fragment(R.layout.fragment_home) {
         maghrib = currentList!![day].maghrib
         isha = currentList!![day].isha
         date_for = currentList!![day].date_for
-        println(Countdown(asr!!))
+
+
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -137,7 +136,6 @@ class Home() : Fragment(R.layout.fragment_home) {
         val db = PrayersDatabase.getinstance(context)
         PrayersDatabase.db_write.execute {
             mlist = db.dao().getall() as ArrayList<Item>
-            println(mlist.size)
             getCity()
 
         }
@@ -150,29 +148,152 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.maghrib.text = maghrib
         binding.isha.text = isha
         binding.dateTV.text = date_for
+        // binding.timeshow.text="5:3"
+        getnext()
     }
+
     @SuppressLint("NewApi")
-    fun Countdown(prayer:String) : Duration{
+    fun Countdown(prayer: String): LocalTime {
+
         val sdf = DateTimeFormatter.ofPattern("hh:mm a")
-        var value:LocalTime
-        var timeNow=LocalTime.now()
-        println("${prayer.length}===c")
+        var timeNow = LocalTime.now()
 
-        if (prayer.length <=7){
+        val systemDate = Calendar.getInstance().time
+        //  displaytime.text="systemDate.toString()"
+        //  displaytime.setText("check")
+        binding.timeshow.text = timeNow.format(sdf)
 
-            var prayerPlus= "0$prayer"
-             value= LocalTime.parse(prayerPlus.uppercase(),sdf)
+        var value: LocalTime = if (prayer.length <= 7) {
 
+            var prayerPlus = "0$prayer"
+            LocalTime.parse(prayerPlus.uppercase(), sdf)
+
+
+        } else {
+            LocalTime.parse(prayer.uppercase(), sdf)
 
         }
-        else{
-           value= LocalTime.parse(prayer.uppercase(),sdf)
+        return value
+        /* var fdiff = String.format(
+             Locale.ENGLISH,
+             "%d hours %d minutes %d seconds",
+             difference.toDays(),
+             difference.toHoursPart(),
+             difference.toMinutesPart(),
+             difference.toSecondsPart()
 
-        }
-        return Duration.between(value,timeNow)
+         ) */
+
 
     }
 
+    fun getnext() {
+        var timeNow = LocalTime.now()
 
+        val prayer1 = Countdown(fajr!!)
+        val prayer2 = Countdown(dhuhr!!)
+        val prayer3 = Countdown(asr!!)
+        val prayer4 = Countdown(maghrib!!)
+        val prayer5 = Countdown(isha!!)
+
+        when {
+            timeNow <= prayer1 -> {
+                binding.fajr.setTextColor(Color.GREEN)
+                binding.fajrTV.setTextColor(Color.GREEN)
+
+
+                //To avoid on resume conflict
+                binding.dhuhr.setTextColor(Color.BLACK)
+                binding.dhurTV.setTextColor(Color.BLACK)
+
+                binding.asr.setTextColor(Color.BLACK)
+                binding.asrTV.setTextColor(Color.BLACK)
+
+                binding.maghrib.setTextColor(Color.BLACK)
+                binding.maghribTV.setTextColor(Color.BLACK)
+
+                binding.isha.setTextColor(Color.BLACK)
+                binding.ishaTV.setTextColor(Color.BLACK)
+
+            }
+            timeNow <= prayer2 -> {
+                binding.dhuhr.setTextColor(Color.GREEN)
+                binding.dhurTV.setTextColor(Color.GREEN)
+
+                //To avoid on resume conflict
+                binding.fajr.setTextColor(Color.BLACK)
+                binding.fajrTV.setTextColor(Color.BLACK)
+
+                binding.asr.setTextColor(Color.BLACK)
+                binding.asrTV.setTextColor(Color.BLACK)
+
+                binding.maghrib.setTextColor(Color.BLACK)
+                binding.maghribTV.setTextColor(Color.BLACK)
+
+                binding.isha.setTextColor(Color.BLACK)
+                binding.ishaTV.setTextColor(Color.BLACK)
+
+            }
+            timeNow <= prayer3 -> {
+                binding.asr.setTextColor(Color.GREEN)
+                binding.asrTV.setTextColor(Color.GREEN)
+
+                //To avoid on resume conflict
+                binding.fajr.setTextColor(Color.BLACK)
+                binding.fajrTV.setTextColor(Color.BLACK)
+
+                binding.dhuhr.setTextColor(Color.BLACK)
+                binding.dhurTV.setTextColor(Color.BLACK)
+
+                binding.maghrib.setTextColor(Color.BLACK)
+                binding.maghribTV.setTextColor(Color.BLACK)
+
+                binding.isha.setTextColor(Color.BLACK)
+                binding.ishaTV.setTextColor(Color.BLACK)
+
+            }
+            timeNow <= prayer4 -> {
+                binding.maghrib.setTextColor(Color.GREEN)
+                binding.maghribTV.setTextColor(Color.GREEN)
+
+                //To avoid on resume conflict
+                binding.fajr.setTextColor(Color.BLACK)
+                binding.fajrTV.setTextColor(Color.BLACK)
+
+                binding.dhuhr.setTextColor(Color.BLACK)
+                binding.dhurTV.setTextColor(Color.BLACK)
+
+                binding.asr.setTextColor(Color.BLACK)
+                binding.asrTV.setTextColor(Color.BLACK)
+
+                binding.isha.setTextColor(Color.BLACK)
+                binding.ishaTV.setTextColor(Color.BLACK)
+
+            }
+            timeNow <= prayer5 -> {
+                binding.isha.setTextColor(Color.GREEN)
+                binding.ishaTV.setTextColor(Color.GREEN)
+
+                //To avoid on resume conflict
+                binding.fajr.setTextColor(Color.BLACK)
+                binding.fajrTV.setTextColor(Color.BLACK)
+
+                binding.dhuhr.setTextColor(Color.BLACK)
+                binding.dhurTV.setTextColor(Color.BLACK)
+
+                binding.asr.setTextColor(Color.BLACK)
+                binding.asrTV.setTextColor(Color.BLACK)
+
+                binding.maghrib.setTextColor(Color.BLACK)
+                binding.maghribTV.setTextColor(Color.BLACK)
+
+
+            }
+        }
+
+
+    }
 
 }
+
+

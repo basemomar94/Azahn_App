@@ -163,7 +163,6 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
                         prayersList = prayers.items
                         prayerArray = ArrayList(prayersList)
-                        println("${prayers.qibla_direction} ==================Qibla")
                         val db = PrayersDatabase.getinstance(this@SplashScreen)
                         PrayersDatabase.db_write.execute {
 
@@ -248,7 +247,7 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     @RequiresApi(Build.VERSION_CODES.P)
     fun Checking() {
-        if (isOnline() && isGps()) {
+        if (isOnline() ) {
 
             if (!hasLocationPermission()) {
                 requestLocationPermission()
