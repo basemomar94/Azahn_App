@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Azahn lite</string>
+    <string name="app_name" translatable="true">Prayers lite</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="title_activity_main2" translatable="false">MainActivity2</string>
@@ -15,4 +15,7 @@
     <string name="qibla">Qibla</string>
     <string name="prayers">Prayers</string>
     <string name="azkar">Azkar</string>
+    <string name="please_check_your_internet_connection">Please check your internet connection</string>
+    <string name="try_again">try again</string>
+    <string name="put_your_phone_on_a_straight_surface_and_rotate_it_slowly_toward_kabaa_till_the_arrow_turns_green">Put your phone on a straight surface and rotate it slowly toward Kabaa till the arrow turns green</string>
 </resources>

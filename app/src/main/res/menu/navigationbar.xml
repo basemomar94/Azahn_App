@@ -10,8 +10,4 @@
         android:id="@+id/prayer"
         android:icon="@drawable/mosque"
         android:title="@string/prayers" />
-    <item
-        android:id="@+id/azkaar"
-        android:icon="@drawable/settings"
-        android:title="@string/azkar" />
 </menu>

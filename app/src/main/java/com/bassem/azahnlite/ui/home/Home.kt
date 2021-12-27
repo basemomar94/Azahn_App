@@ -147,16 +147,18 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.isha.text = isha
         binding.dateTV.text = date_for
 
-           getnext()
+        getnext()
     }
 
     @SuppressLint("NewApi")
     fun Countdown(prayer: String): LocalTime {
 
-        val sdf = DateTimeFormatter.ofPattern("hh:mm a")
+        var locale: Locale = Locale.US
+
+        val sdf = DateTimeFormatter.ofPattern("hh:mm a").withLocale(locale)
         val value: LocalTime = if (prayer.length <= 7) {
             val prayerPlus = "0$prayer"
-            LocalTime.parse(prayerPlus.uppercase(), sdf,)
+            LocalTime.parse(prayerPlus.uppercase(), sdf)
 
 
         } else {

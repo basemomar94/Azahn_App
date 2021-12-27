@@ -244,7 +244,6 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
         }
         else {
-           // sendToActivity()
             no_internet.visibility= View.VISIBLE
             try_again.visibility=View.VISIBLE
             try_again.setOnClickListener {
