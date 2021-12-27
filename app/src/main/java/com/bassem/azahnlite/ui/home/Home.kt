@@ -116,8 +116,8 @@ class Home() : Fragment(R.layout.fragment_home) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun getCity() {
         val preference = context!!.getSharedPreferences("Pref", Context.MODE_PRIVATE)
-        city = preference.getString("city", "....")
-        country = preference.getString("country", "...")
+        city = preference.getString("city", "Cairo")
+        country = preference.getString("country", "Egypt")
         currentList = mlist
         fajr = currentList!![day].fajr
         dhuhr = currentList!![day].dhuhr

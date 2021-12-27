@@ -83,7 +83,7 @@ class Qibla () : Fragment(R.layout.fragment_qibla) ,SensorEventListener{
                 Qibla_angle.rotation=angle!!.toFloat()
                 currentDegree = -degree
 
-                if (-currentDegree<= angle!! +1 && -currentDegree>= angle!!-1 ){
+                if (-currentDegree<= angle!! +2 && -currentDegree>= angle!!-2 ){
                     kabaa.alpha=1F
                     circle.alpha=1F
                     Qibla_angle.alpha=1F

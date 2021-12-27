@@ -234,7 +234,6 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     @RequiresApi(Build.VERSION_CODES.P)
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
-        Toast.makeText(this, "Permission is granted", Toast.LENGTH_LONG).show()
         if (isOnline() && isGps()){
             getCurrentLocation()
         }
