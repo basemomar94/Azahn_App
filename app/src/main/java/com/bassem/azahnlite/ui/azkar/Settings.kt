@@ -50,9 +50,6 @@ class Settings ():Fragment(R.layout.fragment_settings) {
         dialog.setCancelable(true)
         dialog.setContentView(R.layout.language)
         dialog.show()
-        val ar:RadioButton= activity!!.findViewById(R.id.Ar)
-        ar.setOnClickListener {
-            dialog.hide()
-        }
+
     }
 }

@@ -12,4 +12,7 @@
     <string name="asr">asr</string>
     <string name="maghrib">maghrib</string>
     <string name="isha">isha</string>
+    <string name="qibla">Qibla</string>
+    <string name="prayers">Prayers</string>
+    <string name="azkar">Azkar</string>
 </resources>

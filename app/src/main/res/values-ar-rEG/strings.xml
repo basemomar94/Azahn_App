@@ -6,4 +6,7 @@
     <string name="asr">العصر</string>
     <string name="maghrib">المغرب</string>
     <string name="isha">العشاء</string>
+    <string name="qibla">القبلة</string>
+    <string name="prayers">مواقيت الصلاة</string>
+    <string name="azkar">الاذكار</string>
 </resources>

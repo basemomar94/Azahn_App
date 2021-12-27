@@ -13,9 +13,11 @@ import android.location.Geocoder
 import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
+import android.opengl.Visibility
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModelProvider
@@ -29,6 +31,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.gson.GsonBuilder
 import com.jaeger.library.StatusBarUtil
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.splash.*
 import okhttp3.*
 import pub.devrel.easypermissions.AppSettingsDialog
 import pub.devrel.easypermissions.EasyPermissions
@@ -61,11 +64,15 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     @SuppressLint("MissingPermission")
     fun getCurrentLocation() {
+        println("1=====================================")
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
-        if (hasLocationPermission()) {
+       try {
+           println("2=====================================")
 
             fusedLocationProviderClient.lastLocation.addOnSuccessListener {
+
+
 
                     location ->
                 run {
@@ -73,9 +80,23 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
                     latitue = location.latitude
                     longtiude = location.longitude
                     Save_coordinates(latitue.toString(), longtiude.toString())
+                    println("I am==========================================")
 
                 }
             }
+           fusedLocationProviderClient.lastLocation.addOnFailureListener {
+               println("You Fail..........................................................")
+
+               val preference = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+               cityBundle=preference.getString("city","Cairo")
+               getPrayers()
+           }
+        }  catch (E:Exception) {
+            println("You idioit..........................................................")
+            val preference = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+            cityBundle=preference.getString("city","Cairo")
+            getPrayers()
+
         }
     }
 
@@ -211,8 +232,34 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
         )
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     override fun onPermissionsGranted(requestCode: Int, perms: MutableList<String>) {
         Toast.makeText(this, "Permission is granted", Toast.LENGTH_LONG).show()
+        if (isOnline() && isGps()){
+            getCurrentLocation()
+        }
+        else if (isOnline() && !isGps()){
+            val preference = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+            cityBundle=preference.getString("city","Cairo")
+            getPrayers()
+
+        }
+        else {
+           // sendToActivity()
+            no_internet.visibility= View.VISIBLE
+            try_again.visibility=View.VISIBLE
+            try_again.setOnClickListener {
+                if (isOnline()){
+                    Checking()
+                }
+                else {
+                    Toast.makeText(this,"You need internet connection",Toast.LENGTH_LONG).show()
+
+                }
+            }
+
+        }
+
 
     }
 
@@ -247,24 +294,24 @@ class SplashScreen : AppCompatActivity(), EasyPermissions.PermissionCallbacks {
 
     @RequiresApi(Build.VERSION_CODES.P)
     fun Checking() {
-        if (isOnline() ) {
-
-            if (!hasLocationPermission()) {
-                requestLocationPermission()
-            } else {
-                try {
-                    getCurrentLocation()
-
-                } catch (E: Exception) {
-                    val intent = Intent(this, MainActivity::class.java)
-                    startActivity(intent)
-                }
-            }
+        if (!hasLocationPermission()){
+            requestLocationPermission()
+        //if app has location permission
         } else {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
+            if (isOnline() && isGps()){
+                getCurrentLocation()
+            }
+            else if (isOnline() && !isGps()){
+                val preference = this.getSharedPreferences("Pref", Context.MODE_PRIVATE)
+                cityBundle=preference.getString("city","Cairo")
+                getPrayers()
 
+            }
+            else {
+                sendToActivity()
+            }
         }
+
 
     }
 

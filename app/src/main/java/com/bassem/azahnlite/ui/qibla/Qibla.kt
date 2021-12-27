@@ -83,13 +83,16 @@ class Qibla () : Fragment(R.layout.fragment_qibla) ,SensorEventListener{
                 Qibla_angle.rotation=angle!!.toFloat()
                 currentDegree = -degree
 
-                if (-currentDegree<= angle!! +5 && -currentDegree>= angle!!-5 ){
+                if (-currentDegree<= angle!! +1 && -currentDegree>= angle!!-1 ){
                     kabaa.alpha=1F
+                    circle.alpha=1F
+                    Qibla_angle.alpha=1F
                     circle.setImageResource(R.drawable.circle_green)
                     Qibla_angle.setImageResource(R.drawable.green)
 
                 } else {
-                    kabaa.alpha=.5F
+                    circle.alpha=.2F
+                    Qibla_angle.alpha=.2F
                     circle.setImageResource(R.drawable.circle)
                     Qibla_angle.setImageResource(R.drawable.blue)
 
@@ -108,5 +111,6 @@ class Qibla () : Fragment(R.layout.fragment_qibla) ,SensorEventListener{
             output[i] = output[i] + alpha * (input[i] - output[i])
         }
     }
+
 
 }

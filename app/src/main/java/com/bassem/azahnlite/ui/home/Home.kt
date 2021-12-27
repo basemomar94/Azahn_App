@@ -74,7 +74,7 @@ class Home() : Fragment(R.layout.fragment_home) {
         super.onResume()
         setTimes()
 
-        getnext()
+        //   getnext()
     }
 
 
@@ -109,8 +109,6 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.dateTV.setOnClickListener {
             binding.dateTV.text = viewModel.getdate()
         }
-
-
 
 
     }
@@ -148,25 +146,17 @@ class Home() : Fragment(R.layout.fragment_home) {
         binding.maghrib.text = maghrib
         binding.isha.text = isha
         binding.dateTV.text = date_for
-        // binding.timeshow.text="5:3"
-        getnext()
+
+           getnext()
     }
 
     @SuppressLint("NewApi")
     fun Countdown(prayer: String): LocalTime {
 
         val sdf = DateTimeFormatter.ofPattern("hh:mm a")
-        var timeNow = LocalTime.now()
-
-        val systemDate = Calendar.getInstance().time
-        //  displaytime.text="systemDate.toString()"
-        //  displaytime.setText("check")
-        binding.timeshow.text = timeNow.format(sdf)
-
-        var value: LocalTime = if (prayer.length <= 7) {
-
-            var prayerPlus = "0$prayer"
-            LocalTime.parse(prayerPlus.uppercase(), sdf)
+        val value: LocalTime = if (prayer.length <= 7) {
+            val prayerPlus = "0$prayer"
+            LocalTime.parse(prayerPlus.uppercase(), sdf,)
 
 
         } else {
@@ -174,21 +164,17 @@ class Home() : Fragment(R.layout.fragment_home) {
 
         }
         return value
-        /* var fdiff = String.format(
-             Locale.ENGLISH,
-             "%d hours %d minutes %d seconds",
-             difference.toDays(),
-             difference.toHoursPart(),
-             difference.toMinutesPart(),
-             difference.toSecondsPart()
-
-         ) */
 
 
     }
 
     fun getnext() {
-        var timeNow = LocalTime.now()
+
+        val timeNow = LocalTime.now()
+        val sdf = DateTimeFormatter.ofPattern("hh:mm a", Locale(Locale.ENGLISH.toString()))
+
+
+        binding.timeshow.text = timeNow.format(sdf)
 
         val prayer1 = Countdown(fajr!!)
         val prayer2 = Countdown(dhuhr!!)
@@ -293,6 +279,7 @@ class Home() : Fragment(R.layout.fragment_home) {
 
 
     }
+
 
 }
 

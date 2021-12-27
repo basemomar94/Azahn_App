@@ -4,14 +4,14 @@
     <item
         android:id="@+id/qibla"
         android:icon="@drawable/mecca"
-        android:title="Qibla" />
+        android:title="@string/qibla" />
     <item
 
         android:id="@+id/prayer"
         android:icon="@drawable/mosque"
-        android:title="Prayers" />
+        android:title="@string/prayers" />
     <item
         android:id="@+id/azkaar"
         android:icon="@drawable/settings"
-        android:title="Settings" />
+        android:title="@string/azkar" />
 </menu>
