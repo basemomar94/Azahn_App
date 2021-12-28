@@ -56,9 +56,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center"
-            android:layout_marginStart="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="64dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="70dp"
             android:text="@string/put_your_phone_on_a_straight_surface_and_rotate_it_slowly_toward_kabaa_till_the_arrow_turns_green"
             android:textSize="16sp" />
 
